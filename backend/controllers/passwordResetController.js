@@ -13,23 +13,26 @@ const requestPasswordReset = async (req, res) => {
             return res.status(400).json({ message: 'Email is required' });
         }
 
-        // Check if user exists
-        const user = await User.findOne({ email: email.toLowerCase() });
-        if (!user) {
-            return res.status(404).json({ message: 'User not found with this email address' });
-        }
-
         // Generate random reset token
         const resetToken = crypto.randomBytes(32).toString('hex');
-
         // Hash token before storing in database
         const hashedToken = crypto.createHash('sha256').update(resetToken).digest('hex');
 
-        // Set token and expiry (1 hour from now)
-        user.resetPasswordToken = hashedToken;
-        user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+        // Update user with reset token
+        // Using findOneAndUpdate avoids triggering validation on existing fields (like missing username)
+        const user = await User.findOneAndUpdate(
+            { email: email.toLowerCase() },
+            {
+                resetPasswordToken: hashedToken,
+                resetPasswordExpires: Date.now() + 3600000 // 1 hour
+            },
+            { new: true }
+        );
 
-        await user.save();
+        // Check if user exists
+        if (!user) {
+            return res.status(404).json({ message: 'User not found with this email address' });
+        }
 
         // Send email with reset link
         try {
@@ -120,27 +123,29 @@ const resetPassword = async (req, res) => {
         // Hash the token to compare with stored hash
         const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
 
-        // Find user with this token
-        const user = await User.findOne({
-            resetPasswordToken: hashedToken,
-            resetPasswordExpires: { $gt: Date.now() }
-        });
+        // Hash new password
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        // Update password and clear reset token fields
+        // Using findOneAndUpdate to bypass validation on other fields
+        const user = await User.findOneAndUpdate(
+            {
+                resetPasswordToken: hashedToken,
+                resetPasswordExpires: { $gt: Date.now() }
+            },
+            {
+                password: hashedPassword,
+                resetPasswordToken: null,
+                resetPasswordExpires: null
+            },
+            { new: true }
+        );
 
         if (!user) {
             return res.status(400).json({
                 message: 'Invalid or expired reset token. Please request a new password reset.'
             });
         }
-
-        // Hash new password
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-        // Update password and clear reset token fields
-        user.password = hashedPassword;
-        user.resetPasswordToken = null;
-        user.resetPasswordExpires = null;
-
-        await user.save();
 
         res.status(200).json({
             message: 'Password has been reset successfully. You can now login with your new password.'
