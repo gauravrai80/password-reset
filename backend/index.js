@@ -38,7 +38,10 @@ app.get('/', (req, res) => {
         endpoints: {
             register: 'POST /register',
             login: 'POST /auth',
-            getUserInfo: 'GET /user (requires Bearer token)'
+            getUserInfo: 'GET /user (requires Bearer token)',
+            forgotPassword: 'POST /forgot-password',
+            validateResetToken: 'GET /reset-password/:token',
+            resetPassword: 'POST /reset-password/:token'
         }
     });
 });
@@ -46,6 +49,7 @@ app.get('/', (req, res) => {
 // Public routes
 app.use('/register', require('./routes/api/register'));
 app.use('/auth', require('./routes/api/auth'));
+app.use('/', require('./routes/api/passwordReset'));
 
 // Protected routes
 app.use('/user', require('./routes/api/user'));

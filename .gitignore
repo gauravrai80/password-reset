@@ -1,7 +1,23 @@
-node_modules/
-.env
-*.log
-.DS_Store
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+# Authentication System
+
+Full-stack authentication system with React frontend and Node.js backend.
+
+## Project Structure
+
+- `/backend` - Node.js/Express API server
+- `/frontend` - React application
+
+## Quick Start
+
+See individual README files in each directory for detailed setup instructions:
+- [Backend Setup](backend/README.md)
+- [Frontend Setup](frontend/README.md)
+
+## Development
+
+1. Start backend: `cd backend && npm run dev`
+2. Start frontend: `cd frontend && npm run dev`
+
+## Author
+
+Gaurav Rai
