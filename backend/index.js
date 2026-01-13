@@ -12,7 +12,7 @@ const mongoose = require('mongoose');
 app.use(cookieParser());
 
 // CORS configuration
-const whitelist = ['http://localhost:3000', 'http://localhost:5173'];
+const whitelist = ['http://localhost:3000', 'http://localhost:5173', 'https://resetpasswd.netlify.app'];
 const corsOptions = {
     origin: function (origin, callback) {
         if (whitelist.indexOf(origin) !== -1 || !origin) {
