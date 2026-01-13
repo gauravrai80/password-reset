@@ -14,15 +14,8 @@ app.use(cookieParser());
 // CORS configuration
 const whitelist = ['http://localhost:3000', 'http://localhost:5173', 'https://resetpasswd.netlify.app'];
 const corsOptions = {
-    origin: function (origin, callback) {
-        if (whitelist.indexOf(origin) !== -1 || !origin) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
+    origin: whitelist,
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
     optionsSuccessStatus: 200
 };
 
