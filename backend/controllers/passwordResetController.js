@@ -44,9 +44,13 @@ const requestPasswordReset = async (req, res) => {
             });
         } catch (emailError) {
             // Clear token if email fails
-            user.resetPasswordToken = null;
-            user.resetPasswordExpires = null;
-            await user.save();
+            await User.findOneAndUpdate(
+                { email: user.email },
+                {
+                    resetPasswordToken: null,
+                    resetPasswordExpires: null
+                }
+            );
 
             return res.status(500).json({
                 message: 'Failed to send password reset email. Please try again later.'
