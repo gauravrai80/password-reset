@@ -52,7 +52,12 @@ const requestPasswordReset = async (req, res) => {
 
     } catch (error) {
         console.error('Error in requestPasswordReset:', error);
-        res.status(500).json({ message: 'Internal server error' });
+        // Return actual error message for debugging
+        res.status(500).json({
+            message: 'Internal server error',
+            error: error.message,
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        });
     }
 };
 
