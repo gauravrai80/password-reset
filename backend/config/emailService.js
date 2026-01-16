@@ -1,18 +1,19 @@
 const nodemailer = require('nodemailer');
 
 // Create transporter for sending emails
-return nodemailer.createTransport({
-    host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-    port: process.env.EMAIL_PORT || 465, // Try 465 (SSL) instead of 587
-    secure: true, // true for 465, false for other ports
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASSWORD
-    },
-    // Enable detailed logging to help debug production issues
-    logger: true,
-    debug: true
-});
+const createTransporter = () => {
+    return nodemailer.createTransport({
+        host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+        port: process.env.EMAIL_PORT || 465, // Try 465 (SSL) instead of 587
+        secure: true, // true for 465, false for other ports
+        auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASSWORD
+        },
+        // Enable detailed logging to help debug production issues
+        logger: true,
+        debug: true
+    });
 };
 
 // Send password reset email
