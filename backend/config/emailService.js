@@ -5,6 +5,15 @@ const createTransporter = () => {
     const port = parseInt(process.env.EMAIL_PORT) || 465;
     const isSecure = port === 465; // true for 465, false for 587 or others
 
+    console.log('Initializing Email Transport with config:', {
+        host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+        port: port,
+        secure: isSecure,
+        user: process.env.EMAIL_USER,
+        // Mask password for security in logs
+        hasPassword: !!process.env.EMAIL_PASSWORD
+    });
+
     return nodemailer.createTransport({
         host: process.env.EMAIL_HOST || 'smtp.gmail.com',
         port: port,
@@ -15,7 +24,8 @@ const createTransporter = () => {
         },
         // Enable detailed logging to help debug production issues
         logger: true,
-        debug: true
+        debug: true,
+        connectionTimeout: 10000 // Fail fast after 10 seconds
     });
 };
 
