@@ -3,11 +3,16 @@ const nodemailer = require('nodemailer');
 // Create transporter for sending emails
 const createTransporter = () => {
     return nodemailer.createTransport({
-        service: 'gmail', // Use 'gmail' service shorthand which handles host/port/secure automatically
+        host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+        port: process.env.EMAIL_PORT || 587,
+        secure: false, // true for 465, false for other ports
         auth: {
             user: process.env.EMAIL_USER,
             pass: process.env.EMAIL_PASSWORD
-        }
+        },
+        // Enable detailed logging to help debug production issues
+        logger: true,
+        debug: true
     });
 };
 
@@ -71,7 +76,8 @@ const sendPasswordResetEmail = async (email, resetToken) => {
         console.log('Password reset email sent:', info.messageId);
         return { success: true, messageId: info.messageId };
     } catch (error) {
-        console.error('Error sending email:', error);
+        console.error('Detailed Error sending email:', JSON.stringify(error, null, 2));
+        console.error('Error message:', error.message);
         throw new Error('Failed to send password reset email');
     }
 };
