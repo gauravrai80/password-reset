@@ -25,7 +25,9 @@ const createTransporter = () => {
         // Enable detailed logging to help debug production issues
         logger: true,
         debug: true,
-        connectionTimeout: 10000 // Fail fast after 10 seconds
+        connectionTimeout: 10000, // Fail fast after 10 seconds
+        greetingTimeout: 10000,   // Fail if greeting takes too long
+        socketTimeout: 20000      // Fail if no data received for 20s
     });
 };
 
@@ -95,4 +97,17 @@ const sendPasswordResetEmail = async (email, resetToken) => {
     }
 };
 
-module.exports = { sendPasswordResetEmail };
+// Verify SMTP connection
+const verifyConnection = async () => {
+    const transporter = createTransporter();
+    try {
+        await transporter.verify();
+        console.log('SMTP Connection Verified Successfully');
+        return true;
+    } catch (error) {
+        console.error('SMTP Connection Failed:', error);
+        return false;
+    }
+};
+
+module.exports = { sendPasswordResetEmail, verifyConnection };

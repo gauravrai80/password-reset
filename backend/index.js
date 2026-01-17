@@ -6,6 +6,10 @@ const cors = require('cors');
 const PORT = process.env.PORT || 3000;
 const connectDB = require('./config/dbConn');
 connectDB();
+const { verifyConnection } = require('./config/emailService');
+
+// Verify email connection on startup
+verifyConnection();
 const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
 

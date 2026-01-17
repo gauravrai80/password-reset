@@ -43,6 +43,7 @@ const requestPasswordReset = async (req, res) => {
                 ...(process.env.NODE_ENV === 'development' && { resetToken })
             });
         } catch (emailError) {
+            console.error('Email sending failed:', emailError);
             // Clear token if email fails
             await User.findOneAndUpdate(
                 { email: user.email },
@@ -53,7 +54,8 @@ const requestPasswordReset = async (req, res) => {
             );
 
             return res.status(500).json({
-                message: 'Failed to send password reset email. Please try again later.'
+                message: 'Failed to send password reset email. Please try again later.',
+                debug: emailError.message // Temporary for debugging
             });
         }
 
